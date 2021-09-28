@@ -1,10 +1,49 @@
+"Definiciones donde obtenemos la información de los personajes"
 type Query {
-  currentNumber: Int
-}
-type Mutation {
-    increment: Int
+    "Obtenemos la lista de todos los personajes"
+    characters: [Character!]!
+    "Información del personaje seleccionado mediante el ID"
+    character(
+        "Identificador del personaje seleccionado"
+        id: ID!): Character
 }
 
+"Definiciones donde gestionamos los votos, añadiendo, modificando o borrando"
+type Mutation {
+    "Acción de añadir votos de un personaje"
+    addVote(
+        "Identificador del personaje al que se quiere emitir un voto"
+        character: ID!): Vote!
+}
+
+"Acciones donde vamos a recibir las notificaciones en tiempo real de los cambios"
 type Subscription {
-  numberIncremented: Int
+    "Definición para recibir los avisos de los cambios en los votos sea cual sea la acción"
+    newVote: Int!
+}
+
+type Vote {
+    id: ID!
+    character: ID!
+    createdAt: String!
+}
+
+"Información del personaje de Breaking Bad"
+type Character {
+    "Identificador único"
+    id: ID!
+    "Nombre / Apellido del personaje"
+    name: String!
+    "Nombre / Apellido del actor que interpreta el personaje"
+    actor: String!
+    "Descripción + detallada acerca del personaje"
+    description: String!
+    "Episodios en los que ha participado el persoaje en la serie"
+    total_episodes: Int!
+    "Nombre del fichero de la foto"
+    photo: String!
+    "Votos que ha recibido"
+    votes: Int!
+    "Información del personaje + detallada"
+    url: String!
 }

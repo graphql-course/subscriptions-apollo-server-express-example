@@ -4,6 +4,8 @@ import express, { Application } from "express";
 import { execute, GraphQLSchema, subscribe } from "graphql";
 import { createServer, Server } from "http";
 import { SubscriptionServer } from "subscriptions-transport-ws";
+import Database from "./config/database";
+import environments from "./config/environments";
 
 class GraphQLServer {
   // Propiedades
@@ -13,9 +15,15 @@ class GraphQLServer {
   private schema!: GraphQLSchema;
   constructor(schema: GraphQLSchema) {
     if (schema === undefined) {
-      throw new Error("Necesitamos un schema de GraphQL para trabajar con APIs GraphQL");
+      throw new Error(
+        "Necesitamos un schema de GraphQL para trabajar con APIs GraphQL"
+      );
     }
     this.schema = schema;
+    if (process.env.NODE_ENV !== "production") {
+      const envs = environments;
+      console.log(envs);
+    }
     this.init();
   }
 
@@ -34,9 +42,16 @@ class GraphQLServer {
   }
 
   private async configApolloServerExpress() {
+      // Llamada para inicializar la base de datos
+    const database = new Database();
+    const db = await database.init();
 
+    const context = async() => {
+      return { db};
+    };
     const apolloServer = new ApolloServer({
-      schema: this.schema
+      schema: this.schema,
+      context
     });
 
     await apolloServer.start();
@@ -44,17 +59,16 @@ class GraphQLServer {
     apolloServer.applyMiddleware({ app: this.app, cors: true });
 
     SubscriptionServer.create(
-        { schema: this.schema, execute, subscribe },
-        { server: this.httpServer, path: apolloServer.graphqlPath }
-      );
-   
+      { schema: this.schema, execute, subscribe },
+      { server: this.httpServer, path: apolloServer.graphqlPath }
+    );
   }
 
   private configRoutes() {
     this.app.get("/hello", (_, res) => {
       res.send("Bienvenid@s al primer proyecto");
     });
-  
+
     this.app.get("/", (_, res) => {
       res.redirect("/graphql");
     });
