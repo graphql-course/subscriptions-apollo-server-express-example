@@ -1,0 +1,21 @@
+{
+  "name": "server-subscriptions-as3",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon \"index.ts\" --exec \"ts-node\" \"index.ts\" -e ts,graphql,json"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@graphql-tools/load-files": "^6.4.0",
+    "@graphql-tools/schema": "^7.1.5",
+    "apollo-server-express": "3.1.2",
+    "express": "^4.17.1",
+    "graphql": "^15.5.1",
+    "graphql-import-node": "^0.0.4",
+    "graphql-subscriptions": "^1.2.1",
+    "nodemon": "^2.0.12",
+    "subscriptions-transport-ws": "^0.9.19",
+    "ts-node": "^10.2.1"
+  }
+}
