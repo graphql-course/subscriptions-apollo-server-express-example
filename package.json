@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon \"index.ts\" --exec \"ts-node\" \"index.ts\" -e ts,graphql,json"
+    "start": "nodemon \"app.ts\" --exec \"ts-node\" \"app.ts\" -e ts,graphql,json"
   },
   "license": "MIT",
   "dependencies": {
     "@graphql-tools/load-files": "^6.4.0",
     "@graphql-tools/schema": "^7.1.5",
-    "apollo-server-express": "3.1.2",
+    "apollo-server-express": "3.3.0",
+    "compression": "^1.7.4",
     "express": "^4.17.1",
     "graphql": "^15.5.1",
     "graphql-import-node": "^0.0.4",
@@ -17,5 +18,8 @@
     "nodemon": "^2.0.12",
     "subscriptions-transport-ws": "^0.9.19",
     "ts-node": "^10.2.1"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.2"
   }
 }

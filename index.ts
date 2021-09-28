@@ -1,10 +1,9 @@
 // @ts-check
-const { createServer } = require("http");
-const express = require("express");
-const { execute, subscribe } = require("graphql");
-const { ApolloServer, gql } = require("apollo-server-express");
-const { PubSub } = require("graphql-subscriptions");
-const { SubscriptionServer } = require("subscriptions-transport-ws");
+import { createServer } from "http";
+import express from "express";
+import { execute, subscribe } from "graphql";
+import { ApolloServer } from "apollo-server-express";
+import { SubscriptionServer } from "subscriptions-transport-ws";
 import schema from "./schema";
 (async () => {
   const PORT = 4000;
