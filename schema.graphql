@@ -19,7 +19,7 @@ type Mutation {
 "Acciones donde vamos a recibir las notificaciones en tiempo real de los cambios"
 type Subscription {
     "Definición para recibir los avisos de los cambios en los votos sea cual sea la acción"
-    newVote: Int!
+    newVote: [Character]
 }
 
 type Vote {

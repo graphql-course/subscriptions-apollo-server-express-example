@@ -1,3 +1,4 @@
+import { PubSub } from "graphql-subscriptions";
 import { ApolloServer } from "apollo-server-express";
 import compression from "compression";
 import express, { Application } from "express";
@@ -13,6 +14,8 @@ class GraphQLServer {
   private httpServer!: Server;
   private readonly DEFAULT_PORT = 3025;
   private schema!: GraphQLSchema;
+  private database!: Database;
+  private pubsub!: PubSub;
   constructor(schema: GraphQLSchema) {
     if (schema === undefined) {
       throw new Error(
@@ -29,8 +32,14 @@ class GraphQLServer {
 
   private init() {
     this.configExpress();
+    this.initializeDbPubSub();
     this.configApolloServerExpress();
     // this.configRoutes();
+  }
+
+  private async initializeDbPubSub() {
+    this.database = new Database();
+    this.pubsub = new PubSub();
   }
 
   private configExpress() {
@@ -42,16 +51,16 @@ class GraphQLServer {
   }
 
   private async configApolloServerExpress() {
-      // Llamada para inicializar la base de datos
-    const database = new Database();
-    const db = await database.init();
-
-    const context = async() => {
-      return { db};
-    };
+    const db = await this.database.init();
     const apolloServer = new ApolloServer({
       schema: this.schema,
-      context
+      introspection: true,
+      context: async () => {
+        return {
+          db,
+          pubsub: this.pubsub,
+        };
+      },
     });
 
     await apolloServer.start();
@@ -59,7 +68,12 @@ class GraphQLServer {
     apolloServer.applyMiddleware({ app: this.app, cors: true });
 
     SubscriptionServer.create(
-      { schema: this.schema, execute, subscribe },
+      {
+        schema: this.schema,
+        execute,
+        subscribe,
+        onConnect: () => ({ db, pubsub: this.pubsub, user: 'Anartz' }),
+      },
       { server: this.httpServer, path: apolloServer.graphqlPath }
     );
   }
