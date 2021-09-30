@@ -1,7 +1,7 @@
 import { Db } from "mongodb";
 import { PubSub } from "graphql-subscriptions";
 import { CHANGE_VOTES, COLLECTIONS, PHOTO_URL } from "../config/constants";
-import { getCharacters, getCharacter, asignVoteId, getCharacterVotes } from "../db-operations";
+import { getCharacters, getCharacter, asignVoteId, getCharacterVotes } from "../lib/db-operations";
 
 
 async function response(status: boolean, message: string, db: Db) {
@@ -16,8 +16,7 @@ async function sendNotification(db: Db, pubsub: PubSub) {
   await pubsub.publish(CHANGE_VOTES, { newVote: characters });
 }
 
-// Resolver map
-const resolvers = {
+const mutationResolvers = {
   Mutation: {
     async addVote(
       _: void,
@@ -57,21 +56,7 @@ const resolvers = {
           );
         });
     },
-  },
-  Subscription: {
-    newVote: {
-      resolve: (payload: any) =>
-        payload.newVote,
-      subscribe: async (_: unknown, __: unknown, context: { db: Db, pubsub: PubSub}) =>
-        context.pubsub.asyncIterator([CHANGE_VOTES]),
-    },
-  },
-  Character: {
-    votes: async (parent: any, __: any, context: { db: Db }) => {
-      return await getCharacterVotes(context.db, parent.id);
-    },
-    photo: (parent: any) => PHOTO_URL.concat(parent.photo),
-  },
+  }  
 };
 
-export default resolvers;
+export default mutationResolvers;

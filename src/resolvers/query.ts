@@ -1,5 +1,5 @@
 import { Db } from "mongodb";
-import { getCharacters, getCharacter } from "../db-operations";
+import { getCharacters, getCharacter } from "../lib/db-operations";
 
 // Resolver map
 const queryResolvers = {

@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { COLLECTIONS } from "./config/constants";
+import { COLLECTIONS } from "../config/constants";
 
 // Lista de personaje
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon \"app.ts\" --exec \"ts-node\" \"app.ts\" -e ts,graphql,json"
+    "start": "nodemon \"src/app.ts\" --exec \"ts-node\" \"src/app.ts\" -e ts,graphql,json"
   },
   "license": "MIT",
   "dependencies": {
