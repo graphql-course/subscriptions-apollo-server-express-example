@@ -3,13 +3,15 @@ import compression from "compression";
 import express, { Application } from "express";
 import { execute, GraphQLSchema, subscribe } from "graphql";
 import { createServer, Server } from "http";
-import { SubscriptionServer } from "subscriptions-transport-ws";
+import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
 
 class GraphQLServer {
   // Propiedades
   private app!: Application;
   private httpServer!: Server;
-  private readonly DEFAULT_PORT = 3025;
+  private readonly DEFAULT_PORT = 3026;
   private schema!: GraphQLSchema;
   constructor(schema: GraphQLSchema) {
     if (schema === undefined) {
@@ -35,29 +37,39 @@ class GraphQLServer {
 
   private async configApolloServerExpress() {
 
-    const apolloServer = new ApolloServer({
-      schema: this.schema
+    // Create our WebSocket server using the HTTP server we just set up.
+    const wsServer = new WebSocketServer({
+      server: this.httpServer,
+      path: '/graphql',
     });
+    // Save the returned server's info so we can shutdown this server later
+    const serverCleanup = useServer({ schema: this.schema }, wsServer);
 
-    await apolloServer.start();
+    // Set up ApolloServer.
+    const server = new ApolloServer({
+      schema: this.schema,
+      csrfPrevention: true,
+      cache: "bounded",
+      plugins: [
+        // Proper shutdown for the HTTP server.
+        ApolloServerPluginDrainHttpServer({ httpServer: this.httpServer }),
 
-    apolloServer.applyMiddleware({ app: this.app, cors: true });
-
-    SubscriptionServer.create(
-        { schema: this.schema, execute, subscribe },
-        { server: this.httpServer, path: apolloServer.graphqlPath }
-      );
-   
-  }
-
-  private configRoutes() {
-    this.app.get("/hello", (_, res) => {
-      res.send("Bienvenid@s al primer proyecto");
+        // Proper shutdown for the WebSocket server.
+        {
+          async serverWillStart() {
+            return {
+              async drainServer() {
+                await serverCleanup.dispose();
+              },
+            };
+          },
+        },
+      ],
     });
-  
-    this.app.get("/", (_, res) => {
-      res.redirect("/graphql");
-    });
+    await server.start();
+    server.applyMiddleware({ app: this.app, cors: true });
+
+
   }
 
   listen(callback: (port: number) => void): void {
