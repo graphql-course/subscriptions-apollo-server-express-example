@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon \"app.ts\" --exec \"ts-node\" \"app.ts\" -e ts,graphql,json"
+    "start": "nodemon \"src/app.ts\" --exec \"ts-node\" \"src/app.ts\" -e ts,graphql,json"
   },
   "license": "MIT",
   "dependencies": {
@@ -11,12 +11,15 @@
     "@graphql-tools/schema": "^8.5.0",
     "apollo-server-core": "^3.9.0",
     "apollo-server-express": "3.3.0",
+    "chalk": "^4.1.2",
     "compression": "^1.7.4",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "graphql": "^15.5.1",
+    "graphql-ably-pubsub": "^1.0.0",
     "graphql-import-node": "^0.0.4",
-    "graphql-subscriptions": "^1.2.1",
     "graphql-ws": "^5.9.0",
+    "mongodb": "^4.1.2",
     "nodemon": "^2.0.12",
     "ts-node": "^10.2.1",
     "ws": "^8.8.0"
